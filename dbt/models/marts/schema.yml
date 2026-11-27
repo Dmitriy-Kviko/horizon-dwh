@@ -1,0 +1,80 @@
+version: 2
+models:
+- name: dim_product
+  description: Измерение по ключу product_id.
+  columns:
+  - name: product_key
+    data_tests:
+    - unique
+    - not_null
+  - name: product_id
+    data_tests:
+    - unique
+    - not_null
+- name: dim_store
+  description: Измерение по ключу store_id.
+  columns:
+  - name: store_key
+    data_tests:
+    - unique
+    - not_null
+  - name: store_id
+    data_tests:
+    - unique
+    - not_null
+- name: dim_calendar
+  description: Календарь обработанных дат.
+  columns:
+  - name: date_key
+    data_tests:
+    - unique
+    - not_null
+  - name: full_date
+    data_tests:
+    - unique
+    - not_null
+- name: fct_sales_daily
+  description: Дневные продажи. Одна строка на день, магазин и товар.
+  columns: &id001
+  - name: date_key
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''dim_calendar'') }}'
+        field: date_key
+  - name: store_key
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''dim_store'') }}'
+        field: store_key
+  - name: product_key
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''dim_product'') }}'
+        field: product_key
+  - name: sum_sales
+    description: Сумма позиций товара за день в магазине.
+    data_tests:
+    - not_null
+  - name: num_transactions
+    description: Уникальные чеки, содержащие товар.
+    data_tests:
+    - not_null
+  - name: avg_transaction_amount
+    description: Средняя полная сумма этих чеков.
+    data_tests:
+    - not_null
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      combination_of_columns: &id002
+      - date_key
+      - store_key
+      - product_key
+- name: int_sales_daily_batch
+  description: Расчёт за выбранные сутки перед публикацией.
+  columns: *id001
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      combination_of_columns: *id002

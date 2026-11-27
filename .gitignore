@@ -1,0 +1,15 @@
+.venv/
+.airflow/
+.env
+__pycache__/
+*.pyc
+demo-data/
+work/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+logs/
+plugins/
+first.json
+repeated.json
+dbt/.user.yml

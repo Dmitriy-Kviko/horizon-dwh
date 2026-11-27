@@ -1,0 +1,10 @@
+version: 2
+sources:
+  - name: raw
+    schema: staging
+    description: Суточные пакеты касс, программы лояльности и ERP персонала.
+    tables:
+      - name: raw_records
+        description: Полученные исходные записи с номером строки и бизнес-датой.
+      - name: load_batches
+        description: Одна строка аудита на источник и бизнес-дату.

@@ -1,0 +1,85 @@
+version: 2
+models:
+- name: stg_sales
+  description: Товарные позиции суточного CSV.
+  columns:
+  - name: transaction_id
+    data_tests:
+    - not_null
+  - name: product_id
+    data_tests:
+    - not_null
+  - name: store_id
+    data_tests:
+    - not_null
+  - name: line_no
+    data_tests:
+    - unique
+    - not_null
+  - name: sold_at
+    data_tests:
+    - not_null
+  - name: sales_amount
+    data_tests:
+    - not_null
+    - dbt_utils.expression_is_true:
+        expression: '> 0'
+  - name: quantity
+    data_tests:
+    - not_null
+- name: stg_clients
+  description: Регистрации клиентов за сутки.
+  columns:
+  - name: client_id
+    data_tests:
+    - unique
+    - not_null
+- name: stg_cards
+  description: Выпуск карт за сутки.
+  columns:
+  - name: card_id
+    data_tests:
+    - unique
+    - not_null
+  - name: client_id
+    data_tests:
+    - not_null
+  - name: status
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - active
+        - blocked
+        - expired
+- name: stg_loyalty_transactions
+  description: Операции с баллами за сутки.
+  columns:
+  - name: loyalty_transaction_id
+    data_tests:
+    - unique
+    - not_null
+  - name: card_id
+    data_tests:
+    - not_null
+  - name: points
+    data_tests:
+    - not_null
+    - dbt_utils.expression_is_true:
+        expression: <> 0
+  - name: transaction_date
+    data_tests:
+    - not_null
+- name: stg_employees
+  description: Данные сотрудников в суточном пакете ERP.
+  columns:
+  - name: employee_id
+    data_tests:
+    - unique
+    - not_null
+  - name: store_id
+    data_tests:
+    - not_null
+  - name: hire_date
+    data_tests:
+    - not_null

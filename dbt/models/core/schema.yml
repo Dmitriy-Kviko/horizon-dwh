@@ -1,0 +1,347 @@
+version: 2
+models:
+- name: hub_product
+  description: Товар
+  columns:
+  - name: hk_product_id
+    data_tests:
+    - unique
+    - not_null
+  - name: product_id
+    data_tests:
+    - unique
+    - not_null
+- name: hub_store
+  description: Магазин
+  columns:
+  - name: hk_store_id
+    data_tests:
+    - unique
+    - not_null
+  - name: store_id
+    data_tests:
+    - unique
+    - not_null
+- name: hub_transaction
+  description: Кассовый чек
+  columns:
+  - name: hk_transaction_id
+    data_tests:
+    - unique
+    - not_null
+  - name: transaction_id
+    data_tests:
+    - unique
+    - not_null
+- name: hub_customer
+  description: Клиент программы лояльности
+  columns:
+  - name: hk_client_id
+    data_tests:
+    - unique
+    - not_null
+  - name: client_id
+    data_tests:
+    - unique
+    - not_null
+- name: hub_card
+  description: Карта лояльности
+  columns:
+  - name: hk_card_id
+    data_tests:
+    - unique
+    - not_null
+  - name: card_id
+    data_tests:
+    - unique
+    - not_null
+- name: hub_loyalty_transaction
+  description: Операция с баллами
+  columns:
+  - name: hk_loyalty_txn_id
+    data_tests:
+    - unique
+    - not_null
+  - name: loyalty_transaction_id
+    data_tests:
+    - unique
+    - not_null
+- name: hub_employee
+  description: Сотрудник
+  columns:
+  - name: hk_employee_id
+    data_tests:
+    - unique
+    - not_null
+  - name: employee_id
+    data_tests:
+    - unique
+    - not_null
+- name: link_sale
+  description: Позиция чека и товар.
+  columns:
+  - name: hk_sale_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_transaction_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_transaction'') }}'
+        field: hk_transaction_id
+  - name: hk_product_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_product'') }}'
+        field: hk_product_id
+- name: link_transaction
+  description: Чек и магазин продажи.
+  columns:
+  - name: hk_txn_store_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_transaction_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_transaction'') }}'
+        field: hk_transaction_id
+  - name: hk_store_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_store'') }}'
+        field: hk_store_id
+- name: link_card_client
+  description: Карта и её владелец.
+  columns:
+  - name: hk_card_client_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_card_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_card'') }}'
+        field: hk_card_id
+  - name: hk_client_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_customer'') }}'
+        field: hk_client_id
+- name: link_loyalty_txn_store
+  description: Операция лояльности и магазин, если указан.
+  columns:
+  - name: hk_loyalty_store_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_loyalty_txn_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_loyalty_transaction'') }}'
+        field: hk_loyalty_txn_id
+  - name: hk_store_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_store'') }}'
+        field: hk_store_id
+- name: link_loyalty_txn_source
+  description: Операция лояльности и исходный чек, если указан.
+  columns:
+  - name: hk_loyalty_source_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_loyalty_txn_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_loyalty_transaction'') }}'
+        field: hk_loyalty_txn_id
+  - name: hk_transaction_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_transaction'') }}'
+        field: hk_transaction_id
+- name: link_loyalty_txn_card
+  description: Операция лояльности и карта.
+  columns:
+  - name: hk_loyalty_card_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_loyalty_txn_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_loyalty_transaction'') }}'
+        field: hk_loyalty_txn_id
+  - name: hk_card_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_card'') }}'
+        field: hk_card_id
+- name: link_employee_store
+  description: Сотрудник и магазин, к которому он привязан.
+  columns:
+  - name: hk_employee_store_id
+    data_tests:
+    - unique
+    - not_null
+  - name: hk_employee_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_employee'') }}'
+        field: hk_employee_id
+  - name: hk_store_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_store'') }}'
+        field: hk_store_id
+- name: sat_product_static
+  description: Статические атрибуты SKU. Справочник отсутствует в условии.
+  columns:
+  - name: hk_product_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_product'') }}'
+        field: hk_product_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_product_dynamic
+  description: Цена закупки и статус SKU. Справочник отсутствует в условии.
+  columns:
+  - name: hk_product_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_product'') }}'
+        field: hk_product_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_store
+  description: Атрибуты магазина. Справочник отсутствует в условии.
+  columns:
+  - name: hk_store_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_store'') }}'
+        field: hk_store_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_transaction_details
+  description: Время и полная сумма чека по всем товарным позициям.
+  columns:
+  - name: hk_transaction_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_transaction'') }}'
+        field: hk_transaction_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_client
+  description: Анкетные данные клиента.
+  columns:
+  - name: hk_client_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_customer'') }}'
+        field: hk_client_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_card
+  description: Номер, дата выдачи и статус карты.
+  columns:
+  - name: hk_card_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_card'') }}'
+        field: hk_card_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_loyalty_txn
+  description: Изменение баллов, дата и тип операции.
+  columns:
+  - name: hk_loyalty_txn_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_loyalty_transaction'') }}'
+        field: hk_loyalty_txn_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_employee
+  description: ФИО, должность и даты работы сотрудника.
+  columns:
+  - name: hk_employee_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''hub_employee'') }}'
+        field: hk_employee_id
+  - name: batch_date
+    data_tests:
+    - not_null
+  - name: hashdiff
+    data_tests:
+    - not_null
+- name: sat_sale
+  description: Стоимость и количество по позиции чека.
+  columns:
+  - name: hk_sale_id
+    data_tests:
+    - not_null
+    - relationships:
+        to: '{{ ref(''link_sale'') }}'
+        field: hk_sale_id
+  - name: amount
+    data_tests:
+    - not_null
+  - name: quantity
+    data_tests:
+    - not_null
